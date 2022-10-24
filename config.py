@@ -18,7 +18,7 @@ if sentry_dsn:
 # Server Specific Configurations
 server = {
     'port': os.environ.get('PADDLES_SERVER_PORT', '8080'),
-    'host': os.environ.get('PADDLES_SERVER_HOST', '172.23.232.5')
+    'host': os.environ.get('PADDLES_SERVER_HOST', '172.23.232.4')
 }
 
 # statsd = {
@@ -26,7 +26,7 @@ server = {
 #     'prefix': os.environ.get('PADDLES_STATSD_PREFIX', 'ceph.test.teuthology.your_lab'),
 # }
 statsd = {
-    'host': 'm1306005.lnxero1.boe',
+    'host': 'm1306004.lnxero1.boe',
     'prefix': 'ceph.test.teuthology.ibmz_lab',
 }
 
@@ -39,8 +39,8 @@ statsd = {
 #     'PADDLES_JOB_LOG_HREF_TEMPL',
 #     'http://qa-proxy.ceph.com/teuthology/{run_name}/{job_id}/teuthology.log'
 # )
-address = 'http://m1306005.lnxero1.boe'
-job_log_href_templ = 'http://172.23.232.5/{run_name}/{job_id}/teuthology.log'  # noqa
+address = 'http://m1306004.lnxero1.boe'
+job_log_href_templ = 'http://172.23.232.4/{run_name}/{job_id}/teuthology.log'  # noqa
 default_latest_runs_count = 25
 
 # Pecan Application Configurations
