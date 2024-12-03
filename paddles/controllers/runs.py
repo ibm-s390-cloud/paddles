@@ -19,7 +19,7 @@ datetime_format = '%Y-%m-%d_%H:%M:%S'
 def latest_runs(fields=None, count=conf.default_latest_runs_count, page=1):
     query = Run.query.order_by(Run.posted.desc())
     query = offset_query(query, page_size=count, page=page)
-    runs = query.all()
+    runs = list(query)
     if fields:
         try:
             return [run.slice(fields) for run in runs]
@@ -143,6 +143,14 @@ class SuitesController(RunFilterIndexController):
         return SuiteController
 
 
+class UsersController(RunFilterIndexController):
+    def get_subquery(self, query):
+        return query.values(Run.user)
+
+    def get_lookup_controller(self):
+        return UserController
+
+
 class StatusesController(RunFilterIndexController):
     def get_subquery(self, query):
         return query.values(Run.status)
@@ -166,8 +174,7 @@ class RunFilterController(RunFilterIndexController):
             since = date_from_string(since, out_fmt=date_format)[1]
             query = query.filter(Run.scheduled > since)
         query = query.order_by(Run.scheduled.desc())
-        return offset_query(query, count, page).all()
-
+        return list(offset_query(query, count, page))
     @expose('json')
     def _lookup(self, field, *remainder):
         return self.get_lookup_controller(field), remainder
@@ -188,6 +195,8 @@ class BranchController(RunFilterController):
             return StatusesController()
         if field == 'suite':
             return SuitesController()
+        if field == 'user':
+            return UsersController()
 
 
 class DateController(RunFilterController):
@@ -201,7 +210,7 @@ class DateController(RunFilterController):
     @expose('json')
     def index(self, count=conf.default_latest_runs_count, page=1):
         query = request.context['query'].order_by(Run.scheduled.desc())
-        return offset_query(query, count, page).all()
+        return list(offset_query(query, count, page))
 
     def get_lookup_controller(self, field):
         if field == 'branch':
@@ -214,6 +223,8 @@ class DateController(RunFilterController):
             return Sha1sController()
         if field == 'suite':
             return SuitesController()
+        if field == 'user':
+            return UsersController()
 
 
 class MachineTypeController(RunFilterController):
@@ -231,6 +242,8 @@ class MachineTypeController(RunFilterController):
             return Sha1sController()
         if field == 'suite':
             return SuitesController()
+        if field == 'user':
+            return UsersController()
 
 
 class StatusController(RunFilterController):
@@ -248,6 +261,8 @@ class StatusController(RunFilterController):
             return Sha1sController()
         if field == 'suite':
             return SuitesController()
+        if field == 'user':
+            return UsersController()
 
 
 class SuiteController(RunFilterController):
@@ -265,6 +280,27 @@ class SuiteController(RunFilterController):
             return Sha1sController()
         if field == 'status':
             return StatusesController()
+        if field == 'user':
+            return UsersController()
+
+
+class UserController(RunFilterController):
+    def get_subquery(self, query):
+        return query.filter(Run.user == self.value)
+
+    def get_lookup_controller(self, field):
+        if field == 'branch':
+            return BranchesController()
+        if field == 'date':
+            return DatesController()
+        if field == 'machine_type':
+            return MachineTypesController()
+        if field == 'sha1':
+            return Sha1sController()
+        if field == 'status':
+            return StatusesController()
+        if field == 'suite':
+            return SuitesController()
 
 
 class DateRangeController(object):
@@ -317,6 +353,8 @@ class Sha1Controller(RunFilterController):
             return StatusesController()
         if field == 'suite':
             return SuitesController()
+        if field == 'user':
+            return UsersController()
 
 
 
@@ -361,6 +399,8 @@ class RunsController(object):
     queued = QueuedRunsController()
 
     sha1 = Sha1sController()
+
+    user = UsersController()
 
     @expose('json')
     def _lookup(self, name, *remainder):

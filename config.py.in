@@ -12,7 +12,7 @@ sentry_dsn = os.environ.get("SENTRY_DSN")
 if sentry_dsn:
     sentry_sdk.init(
         sentry_dsn,
-        traces_sample_rate=1,
+        traces_sample_rate=0.1,
     )
 
 # Server Specific Configurations
@@ -65,12 +65,20 @@ app = {
 }
 
 logging = {
+    'version': 1,
     'disable_existing_loggers': False,
+    'root': {'level': 'INFO', 'handlers': []},
     'loggers': {
         'root': {'level': 'INFO', 'handlers': ['console']},
         'paddles': {'level': 'DEBUG', 'handlers': ['console']},
         'sqlalchemy': {'level': 'WARN', 'handlers': ['console']},
         'py.warnings': {'handlers': ['console']},
+        'gunicorn.error': {
+            'level': 'INFO',
+            'handlers': ['console'],
+            'propagate': False,
+            'qualname': 'gunicorn.error'
+        },
         '__force_dict__': True
     },
     'handlers': {
