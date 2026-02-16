@@ -18,7 +18,7 @@ if sentry_dsn:
 # Server Specific Configurations
 server = {
     'port': os.environ.get('PADDLES_SERVER_PORT', '8080'),
-    'host': os.environ.get('PADDLES_SERVER_HOST', '172.23.232.2')
+    'host': os.environ.get('PADDLES_SERVER_HOST', '172.23.232.3')
 }
 
 # statsd = {
